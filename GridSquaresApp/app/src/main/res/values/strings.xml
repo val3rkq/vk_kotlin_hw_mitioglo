@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GridSquaresApp</string>
+    <string name="add_square">Добавить квадрат</string>
+    <string name="no_squares">Квадратов пока нет…</string>
 </resources>

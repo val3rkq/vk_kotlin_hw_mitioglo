@@ -6,10 +6,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.grid_squares_app.R
 import com.example.grid_squares_app.ui.theme.EmptyStateTextColor
-import com.example.grid_squares_app.utils.NoSquaresText
 
 @Composable
 fun EmptyState(modifier: Modifier = Modifier) {
@@ -18,7 +19,7 @@ fun EmptyState(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = NoSquaresText,
+            text = stringResource(id = R.string.no_squares),
             fontSize = 16.sp,
             color = EmptyStateTextColor,
         )

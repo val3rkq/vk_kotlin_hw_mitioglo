@@ -21,13 +21,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.grid_squares_app.R
 import com.example.grid_squares_app.components.EmptyState
 import com.example.grid_squares_app.components.Feed
 import com.example.grid_squares_app.ui.theme.BackgroundColor
 import com.example.grid_squares_app.ui.theme.BtnColor
-import com.example.grid_squares_app.utils.AddSquareText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,7 +76,7 @@ fun MainScreen() {
             colors = ButtonDefaults.buttonColors(containerColor = BtnColor),
         ) {
             Text(
-                text = AddSquareText,
+                text = stringResource(id = R.string.add_square),
                 fontSize = 16.sp,
             )
         }
