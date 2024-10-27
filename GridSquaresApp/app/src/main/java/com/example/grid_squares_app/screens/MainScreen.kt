@@ -15,9 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -32,17 +36,34 @@ import com.example.grid_squares_app.ui.theme.BtnColor
 import kotlinx.coroutines.launch
 
 @Composable
+fun <T: Any> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+    return rememberSaveable(saver = snapshotStateListSaver()) {
+        elements.toList().toMutableStateList()
+    }
+}
+
+private fun <T : Any> snapshotStateListSaver() = listSaver<SnapshotStateList<T>, T>(
+    save = { stateList -> stateList.toList() },
+    restore = { it.toMutableStateList() },
+)
+
+@Composable
 fun MainScreen() {
 
     // rememberSaveable - для сохранения состояния списка чисел при смене ориентации
-    var numbers: List<Int> by rememberSaveable { mutableStateOf(listOf()) }
-    val gridState = rememberLazyGridState()
+    val numbers = rememberMutableStateListOf<Int>()
     val coroutineScope = rememberCoroutineScope()
+    val gridState = rememberLazyGridState()
     val configuration = LocalConfiguration.current
 
-    // автоматический скролл вниз до последнего элемента
-    LaunchedEffect(numbers.size) {
+    var isAddingSquare by remember { mutableStateOf(false) }
+    LaunchedEffect(isAddingSquare, numbers.size) {
+        if (isAddingSquare) {
+            numbers.add(numbers.size + 1)
+            isAddingSquare = false
+        }
         if (numbers.isNotEmpty()) {
+            // автоматический скролл вниз до последнего элемента
             coroutineScope.launch {
                 gridState.scrollToItem(numbers.size - 1)
             }
@@ -53,7 +74,9 @@ fun MainScreen() {
     val columns = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4 else 3
 
     Column(
-        modifier = Modifier.fillMaxSize().background(color = BackgroundColor),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BackgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (numbers.isEmpty()) {
@@ -68,7 +91,9 @@ fun MainScreen() {
         }
 
         Button(
-            onClick = { numbers += numbers.size + 1 },
+            onClick = {
+                isAddingSquare = true
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp, vertical = 8.dp),

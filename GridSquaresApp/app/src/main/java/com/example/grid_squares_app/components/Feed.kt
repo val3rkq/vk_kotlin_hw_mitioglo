@@ -7,12 +7,13 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grid_squares_app.ui.theme.*
 
 @Composable
-fun Feed(numbers: List<Int>, modifier: Modifier = Modifier, columns: Int, gridState: LazyGridState) {
+fun Feed(numbers: SnapshotStateList<Int>, modifier: Modifier = Modifier, columns: Int, gridState: LazyGridState) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(columns),
         modifier = modifier
