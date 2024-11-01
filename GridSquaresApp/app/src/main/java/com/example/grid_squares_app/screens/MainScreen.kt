@@ -1,16 +1,15 @@
 package com.example.grid_squares_app.screens
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,18 +26,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.grid_squares_app.R
+import com.example.grid_squares_app.components.CustomButton
 import com.example.grid_squares_app.components.EmptyState
 import com.example.grid_squares_app.components.Feed
 import com.example.grid_squares_app.ui.theme.BackgroundColor
-import com.example.grid_squares_app.ui.theme.BtnColor
 import kotlinx.coroutines.launch
 
 @Composable
 fun <T: Any> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+    // rememberSaveable - для сохранения состояния списка чисел при смене ориентацииa
     return rememberSaveable(saver = snapshotStateListSaver()) {
-        elements.toList().toMutableStateList()
+        elements.toList().toMutableStateList() // default value - пустой snapshotStateList<Int>
     }
 }
 
@@ -48,19 +47,26 @@ private fun <T : Any> snapshotStateListSaver() = listSaver<SnapshotStateList<T>,
 )
 
 @Composable
-fun MainScreen() {
+fun MainScreen(context: Context) {
 
-    // rememberSaveable - для сохранения состояния списка чисел при смене ориентации
     val numbers = rememberMutableStateListOf<Int>()
     val coroutineScope = rememberCoroutineScope()
     val gridState = rememberLazyGridState()
     val configuration = LocalConfiguration.current
 
     var isAddingSquare by remember { mutableStateOf(false) }
-    LaunchedEffect(isAddingSquare, numbers.size) {
+    var isRemovingSquare by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isAddingSquare, isRemovingSquare, numbers.size) {
         if (isAddingSquare) {
             numbers.add(numbers.size + 1)
             isAddingSquare = false
+        }
+        if (isRemovingSquare) {
+            if (numbers.size > 0) {
+                numbers.removeAt(numbers.size - 1)
+            }
+            isRemovingSquare = false
         }
         if (numbers.isNotEmpty()) {
             // автоматический скролл вниз до последнего элемента
@@ -74,7 +80,7 @@ fun MainScreen() {
     val columns = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4 else 3
 
     Column(
-        modifier = Modifier
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)
             .fillMaxSize()
             .background(color = BackgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,6 +89,7 @@ fun MainScreen() {
             EmptyState(modifier = Modifier.weight(1f))
         } else {
             Feed(
+                context = context,
                 numbers = numbers,
                 modifier = Modifier.weight(1f),
                 gridState = gridState,
@@ -90,19 +97,20 @@ fun MainScreen() {
             )
         }
 
-        Button(
-            onClick = {
-                isAddingSquare = true
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = BtnColor),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(
+            CustomButton(
+                onClick = {
+                    isAddingSquare = true
+                },
                 text = stringResource(id = R.string.add_square),
-                fontSize = 16.sp,
+            )
+            CustomButton(
+                onClick = {
+                    isRemovingSquare = true
+                },
+                text = stringResource(id = R.string.remove_square),
             )
         }
     }

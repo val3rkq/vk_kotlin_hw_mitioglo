@@ -13,16 +13,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GridSquaresAppTheme {
-                MainScreen()
+                MainScreen(this)
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    GridSquaresAppTheme {
-        MainScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun MainScreenPreview() {
+//    GridSquaresAppTheme {
+//        MainScreen()
+//    }
+//}
