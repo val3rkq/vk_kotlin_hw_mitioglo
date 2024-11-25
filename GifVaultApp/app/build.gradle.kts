@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -18,6 +20,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // get API KEY from local properties
+        val secretProperties = rootProject.file("local.properties").inputStream().use { Properties().apply { load(it) } }
+        val giphyApiKey = secretProperties.getProperty("GIPHY_API_KEY")
+
+        buildConfigField("String", "GIPHY_API_KEY", "\"$giphyApiKey\"")
     }
 
     buildTypes {
@@ -37,6 +45,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -66,4 +75,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.paging.compose)
+
+    // coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // coil + gif support
+    implementation("io.coil-kt.coil3:coil-compose:3.0.3")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.3")
+    implementation("io.coil-kt.coil3:coil-gif:3.0.3")
+
+    // retrofit + gson + http (for logging)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
 }
