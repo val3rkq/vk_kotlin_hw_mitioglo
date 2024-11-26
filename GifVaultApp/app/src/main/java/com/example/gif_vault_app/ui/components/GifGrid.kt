@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -34,11 +38,8 @@ fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
 
                 val totalItems = layoutInfo.totalItemsCount
                 val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                println(totalItems)
-                println(lastVisibleIndex)
 
                 if (!isLoading && totalItems > 0 && lastVisibleIndex >= totalItems - 3) {
-                    println("111")
                     loadMoreData()
                 }
             }
@@ -56,7 +57,8 @@ fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(8.dp)
     ) {
-        val chunkedGifs = gifs.chunked(columns) // Разбиваем на строки, где каждая строка содержит N колонок
+        // Разбиваем на строки, где каждая строка содержит N колонок
+        val chunkedGifs = gifs.chunked(columns)
         items(chunkedGifs) { rowGifs ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 rowGifs.forEach { gif ->
@@ -84,6 +86,15 @@ fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
                         .padding(16.dp)
                 ) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+        } else {
+            item {
+                Button(
+                    onClick = loadMoreData,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Загрузить еще картинки")
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.example.gif_vault_app.data.repository
 
+import android.util.Log
 import com.example.gif_vault_app.BuildConfig
 import com.example.gif_vault_app.data.api.GiphyApi
 import com.example.gif_vault_app.data.models.GifItem
@@ -18,6 +19,8 @@ class GifRepositoryImpl(private val api: GiphyApi) : GifRepository {
                 limit = limit,
                 offset = offset
             )
+            Log.d("API", response.data.toString())
+
             Result.success(response.data)
         } catch (e: Exception) {
             Result.failure(e)

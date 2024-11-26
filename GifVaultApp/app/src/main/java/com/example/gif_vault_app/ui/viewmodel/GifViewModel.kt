@@ -1,5 +1,6 @@
 package com.example.gif_vault_app.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gif_vault_app.data.models.GifItem
