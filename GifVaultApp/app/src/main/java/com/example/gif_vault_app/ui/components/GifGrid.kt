@@ -28,22 +28,6 @@ import com.example.gif_vault_app.data.models.GifItem
 
 @Composable
 fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
-    // Состояние списка
-    val listState = rememberLazyListState()
-
-    // Проверяем достижение конца списка
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo }
-            .collect { layoutInfo ->
-
-                val totalItems = layoutInfo.totalItemsCount
-                val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-                if (!isLoading && totalItems > 0 && lastVisibleIndex >= totalItems - 3) {
-                    loadMoreData()
-                }
-            }
-    }
 
     // Проверяем ориентацию и устанавливаем количество колонок в зависимости от ориентации экрана
     val columns = if (LocalConfiguration.current.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
@@ -53,7 +37,6 @@ fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
     }
 
     LazyColumn(
-        state = listState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(8.dp)
     ) {

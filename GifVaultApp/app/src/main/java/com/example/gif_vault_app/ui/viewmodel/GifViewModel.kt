@@ -21,10 +21,11 @@ class GifViewModel(private val repository: GifRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> get() = _uiState
 
+    private val _gifs = MutableStateFlow<List<GifItem>>(emptyList())
+    val gifs: StateFlow<List<GifItem>> get() = _gifs
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: Boolean get() = _isLoading.value
-
-    private val gifs = mutableListOf<GifItem>()
 
     private var offset = 0
     private val limit = 20
@@ -40,9 +41,9 @@ class GifViewModel(private val repository: GifRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val newGifs = repository.getTrendingGifs(limit, offset).getOrThrow()
-                gifs.addAll(newGifs) // add new gifs
+                _gifs.value += newGifs // add new gifs
                 offset += limit
-                _uiState.value = UiState.Success(gifs) // update state
+                _uiState.value = UiState.Success(_gifs.value) // update state
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.localizedMessage ?: "An error occurred.")
             } finally {

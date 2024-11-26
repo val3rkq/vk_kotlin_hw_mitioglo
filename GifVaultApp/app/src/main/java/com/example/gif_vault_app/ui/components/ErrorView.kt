@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 fun ErrorView(onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Button(onClick = onRetry) {
-            Text("Retry")
+            Text("Повторить")
         }
     }
 }
