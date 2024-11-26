@@ -1,15 +1,12 @@
 package com.example.gif_vault_app.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gif_vault_app.data.models.GifItem
 import com.example.gif_vault_app.data.repository.GifRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
 sealed class UiState {
     object Loading : UiState()
