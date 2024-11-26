@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 sealed class UiState {
     object Loading : UiState()
     data class Success(val gifs: List<GifItem>) : UiState()
+    data class FullGif(val gif: GifItem?) : UiState()
     data class Error(val message: String) : UiState()
 }
 
@@ -46,6 +47,19 @@ class GifViewModel(private val repository: GifRepository) : ViewModel() {
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    // show full gif
+    fun updateCurrentGif(newGif: GifItem) {
+        viewModelScope.launch {
+            _uiState.value = UiState.FullGif(newGif)
+        }
+    }
+
+    fun hideFullGif() {
+        viewModelScope.launch {
+            _uiState.value = UiState.Success(gifs.value)
         }
     }
 

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import com.example.gif_vault_app.data.api.GiphyApiClient
 import com.example.gif_vault_app.data.repository.GifRepositoryImpl
 import com.example.gif_vault_app.ui.components.ErrorView
+import com.example.gif_vault_app.ui.components.FullScreenGifView
 import com.example.gif_vault_app.ui.components.GifGrid
 import com.example.gif_vault_app.ui.components.LoadingView
 import com.example.gif_vault_app.ui.viewmodel.GifViewModel
@@ -34,7 +35,9 @@ class MainActivity : ComponentActivity() {
 
             // screen
             Scaffold { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+                Box(modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()) {
                     GifListScreen(viewModel)
                 }
             }
@@ -47,7 +50,8 @@ fun GifListScreen(viewModel: GifViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     when (uiState) {
         is UiState.Loading -> LoadingView()
-        is UiState.Success -> GifGrid((uiState as UiState.Success).gifs, { viewModel.loadGifs() }, viewModel.isLoading)
+        is UiState.Success -> GifGrid((uiState as UiState.Success).gifs, { viewModel.loadGifs() }, viewModel, viewModel.isLoading)
         is UiState.Error -> ErrorView { viewModel.retry() }
+        is UiState.FullGif -> FullScreenGifView(gif = (uiState as UiState.FullGif).gif) { viewModel.hideFullGif() }
     }
 }

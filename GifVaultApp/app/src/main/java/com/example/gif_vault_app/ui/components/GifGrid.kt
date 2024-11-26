@@ -9,25 +9,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil3.PlatformContext
+import androidx.lifecycle.ViewModel
 import com.example.gif_vault_app.data.models.GifItem
+import com.example.gif_vault_app.ui.viewmodel.GifViewModel
 
 @Composable
-fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
+fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, viewModel: GifViewModel, isLoading: Boolean) {
 
     // Проверяем ориентацию и устанавливаем количество колонок в зависимости от ориентации экрана
     val columns = if (LocalConfiguration.current.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
@@ -50,7 +45,9 @@ fun GifGrid(gifs: List<GifItem>, loadMoreData: () -> Unit, isLoading: Boolean) {
                             .weight(1f) // Равномерное распределение колонок
                             .padding(4.dp)
                     ) {
-                        GifItemView(gif)
+                        GifItemView(gif, onGifClick = {
+                            viewModel.updateCurrentGif(gif)
+                        })
                     }
                 }
                 // Если в строке не хватает элементов, добавляем пустое место
