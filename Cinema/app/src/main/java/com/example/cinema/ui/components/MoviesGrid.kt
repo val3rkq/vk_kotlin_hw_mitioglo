@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.cinema.data.models.MovieModel
+import com.example.cinema.navigation.getMoviePath
 import com.example.cinema.ui.viewmodel.CategoryViewModel
 
 @Composable
@@ -42,7 +43,7 @@ fun MoviesGrid(
                 MovieCard(
                     movie = movie,
                     onMovieClick = {
-                        navController.navigate("movie?movieName=${movie.title}&movieId=${movie.id}")
+                        navController.navigate(getMoviePath(movie.title, movie.id.toString()))
                     },
                 )
             }

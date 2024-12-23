@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -42,119 +43,129 @@ import com.example.cinema.data.models.MovieResponse
 import com.example.cinema.ui.theme.IconNotLiked
 import com.example.cinema.ui.theme.mainColor
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun MovieCard(movie: MovieModel, onMovieClick: () -> Unit) {
-    // get object of class Genres for converting genres from API num to word
-    val genres = Genres()
-
     Card(
         modifier = Modifier
-            .width(250.dp)  // Card width
-            .height(300.dp)  // Card height
+            .width(250.dp)
+            .height(300.dp)
             .clickable { onMovieClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(4.dp),
     ) {
         Box {
-            // Background blurred image
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://image.tmdb.org/t/p/w500/" + movie.poster_path)
-                    .crossfade(true)
-                    .build(),
-                contentScale = ContentScale.FillBounds,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .blur(10.dp)  // Apply blur effect
-                    .graphicsLayer {
-                        alpha = 0.8F // Set opacity
-                    }
-            )
+            BackgroundImage(movie, isBlurred = true)
 
-            // Background image
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://image.tmdb.org/t/p/w500/" + movie.poster_path)
-                    .crossfade(true)
-                    .build(),
-                contentScale = ContentScale.Fit,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            )
-            // Overlay for text content
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Heart icon
-                    Icon(
-                        imageVector = IconNotLiked,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.White
-                    )
+            BackgroundImage(movie)
 
-                    // Rating
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .background(mainColor, RoundedCornerShape(12.dp))
-                    ) {
-                        Text(
-                            text = String.format("%.1f", movie.vote_average),
-                            style = TextStyle(
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .background(color = mainColor)
-                        .clip(RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp))
-                        .padding(10.dp)
-                ) {
-                    // Movie title
-                    Text(
-                        text = movie.title,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 18.sp
-                        ),
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    // Genre
-                    Text(
-                        text = genres.getGenresByIds(movie.genre_ids),
-                        style = TextStyle(
-                            fontWeight = FontWeight.Light,
-                            color = Color.White,
-                            fontSize = 14.sp,
-                        ),
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
+            TextContent(movie)
         }
+    }
+}
+
+@Composable
+fun BackgroundImage(movie: MovieModel, isBlurred: Boolean = false) {
+
+    val modifier = if (isBlurred) {
+        Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .blur(10.dp)
+            .alpha(0.8F)
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+    }
+
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data("https://image.tmdb.org/t/p/w500/" + movie.posterPath)
+            .crossfade(true)
+            .build(),
+        contentScale = if (isBlurred) ContentScale.FillBounds else ContentScale.Fit,
+        contentDescription = null,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun TextContent(movie: MovieModel) {
+    // get object of class Genres for converting genres from API num to word
+    val genres = Genres()
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = IconNotLiked,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = Color.White
+            )
+
+            RatingCard(movie)
+
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .background(color = mainColor)
+                .clip(RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp))
+                .padding(10.dp)
+        ) {
+            // Movie title
+            Text(
+                text = movie.title,
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontSize = 18.sp
+                ),
+                overflow = TextOverflow.Ellipsis
+            )
+
+            // Genre
+            Text(
+                text = genres.getGenresByIds(movie.genreIds),
+                style = TextStyle(
+                    fontWeight = FontWeight.Light,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                ),
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@SuppressLint("DefaultLocale")
+@Composable
+fun RatingCard(movie: MovieModel) {
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .background(mainColor, RoundedCornerShape(12.dp))
+    ) {
+        Text(
+            text = String.format("%.1f", movie.voteAverage),
+            style = TextStyle(
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.cinema.R
@@ -33,6 +34,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.cinema.data.models.Genres
+import com.example.cinema.data.models.MovieModel
 import com.example.cinema.data.models.MovieResponse
 import com.example.cinema.ui.components.ErrorView
 import com.example.cinema.ui.components.LoadingView
@@ -46,7 +48,7 @@ import com.example.cinema.ui.viewmodel.MovieViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieScreen(navController: NavController, movieName: String, viewModel: MovieViewModel) {
+fun MovieScreen(navController: NavController, movieName: String, viewModel: MovieViewModel ) {
 
     Scaffold(
         topBar = {
@@ -55,7 +57,7 @@ fun MovieScreen(navController: NavController, movieName: String, viewModel: Movi
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = IconBack,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.pop_back)
                         )
                     }
                 },
@@ -89,11 +91,11 @@ fun MovieScreen(navController: NavController, movieName: String, viewModel: Movi
     }
 }
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun MovieContent(movie: MovieResponse) {
 
-    val genres = Genres()
+    val isLandscapeOrientation =
+        LocalConfiguration.current.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
     Column(
         modifier = Modifier
@@ -101,151 +103,191 @@ fun MovieContent(movie: MovieResponse) {
             .padding(8.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
+        if (!isLandscapeOrientation) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                // Background image
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data("https://image.tmdb.org/t/p/w500/" + movie.backdrop_path)
-                        .crossfade(true)
-                        .build(),
-                    contentScale = ContentScale.FillBounds,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                )
+                MovieInfo(movie)
+
+                TextMovieContent(movie)
             }
 
+            LikeButton {/*TODO: add to favourite */ }
+
+        } else {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                // title and genres
-                Column(modifier = Modifier.weight(3f)) {
-
-                    // Movie title
-                    Text(
-                        text = movie.title,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 30.sp
-                        ),
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    // Genres
-                    Text(
-                        text = genres.getGenres(movie.genres),
-                        style = TextStyle(
-                            fontWeight = FontWeight.Light,
-                            fontSize = 16.sp,
-                        ),
-                        maxLines = 5,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                Column(
+                    modifier = Modifier.fillMaxHeight().weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    MovieInfo(movie)
                 }
 
-                // rating, date, country, language
                 Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    modifier = Modifier.fillMaxHeight().weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // Rating
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFF8A7FFF), RoundedCornerShape(12.dp))
-                    ) {
-                        Text(
-                            text = String.format("%.1f", movie.vote_average),
-                            style = TextStyle(
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier.padding(10.dp)
-                        )
-                    }
+                    TextMovieContent(movie)
 
-                    // Date
-                    Text(
-                        text = movie.release_date,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = textColor
-                        )
-                    )
-
-                    // Countries
-                    Text(
-                        text = movie.origin_country.joinToString(", "),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = textColor
-                        )
-                    )
+                    LikeButton {/*TODO: add to favourite */ }
                 }
             }
+        }
+    }
+}
 
-            Text(
-                text = stringResource(id = R.string.summary),
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            )
+@SuppressLint("DefaultLocale")
+@Composable
+fun MovieInfo(movie: MovieResponse) {
+    val genres = Genres()
 
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+    ) {
+        // Background image
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("https://image.tmdb.org/t/p/w500/" + movie.backdropPath)
+                .crossfade(true)
+                .build(),
+            contentScale = ContentScale.FillBounds,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(16.dp))
+        )
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // title and genres
+        Column(modifier = Modifier.weight(3f)) {
+
+            // Movie title
             Text(
-                text = movie.overview,
+                text = movie.title,
                 style = TextStyle(
-                    fontSize = 16.sp
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp
                 ),
                 overflow = TextOverflow.Ellipsis
             )
 
+            // Genres
+            Text(
+                text = genres.getGenres(movie.genres),
+                style = TextStyle(
+                    fontWeight = FontWeight.Light,
+                    fontSize = 16.sp,
+                ),
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            colors = ButtonColors(
-                contentColor = Color.White,
-                disabledContentColor = Color.White,
-                containerColor = mainColor,
-                disabledContainerColor = mainColor
-            ),
-            onClick = ( {/*TODO: add to favourite */})
+        // rating, date, country, language
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Row (
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Rating
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFF8A7FFF), RoundedCornerShape(12.dp))
             ) {
-                Icon(
-                    imageVector = IconNotLiked,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.White
-                )
-
                 Text(
-                    text = stringResource(id = R.string.add_to_fav),
+                    text = String.format("%.1f", movie.voteAverage),
                     style = TextStyle(
                         color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
                     ),
-                    overflow = TextOverflow.Ellipsis
+                    modifier = Modifier.padding(10.dp)
                 )
             }
+
+            // Date
+            Text(
+                text = movie.releaseDate,
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = textColor
+                )
+            )
+
+            // Countries
+            Text(
+                text = movie.originCountry.joinToString(", "),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = textColor
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun TextMovieContent(movie: MovieResponse) {
+    Text(
+        text = stringResource(id = R.string.summary),
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+    )
+
+    Text(
+        text = movie.overview,
+        style = TextStyle(
+            fontSize = 16.sp
+        ),
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+@Composable
+fun LikeButton(onClick: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        colors = ButtonColors(
+            contentColor = Color.White,
+            disabledContentColor = Color.White,
+            containerColor = mainColor,
+            disabledContainerColor = mainColor
+        ),
+        onClick = onClick
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = IconNotLiked,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = Color.White
+            )
+
+            Text(
+                text = stringResource(id = R.string.add_to_fav),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

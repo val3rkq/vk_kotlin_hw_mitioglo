@@ -1,6 +1,5 @@
 package com.example.cinema.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
@@ -14,6 +13,11 @@ import com.example.cinema.ui.screens.MovieScreen
 import com.example.cinema.ui.viewmodel.CategoryViewModel
 import com.example.cinema.ui.viewmodel.HomeViewModel
 import com.example.cinema.ui.viewmodel.MovieViewModel
+
+// TODO: change params using vararg
+fun getMoviePath(title: String, id: String) : String {
+    return "movie?movieName=${title}&movieId=${id}"
+}
 
 @Composable
 fun AppNavigation(navController: NavHostController, repository: MoviesRepository) {

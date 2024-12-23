@@ -8,9 +8,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cinema.R
 import com.example.cinema.ui.components.UnderDevelopmentAnimation
 import com.example.cinema.ui.theme.IconBack
 import com.example.cinema.ui.viewmodel.FavouriteViewModel
@@ -29,7 +31,7 @@ fun FavouriteScreen(navController: NavController, viewModel: FavouriteViewModel 
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = IconBack,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.pop_back)
                         )
                     }
                 },
@@ -43,7 +45,7 @@ fun FavouriteScreen(navController: NavController, viewModel: FavouriteViewModel 
             )
         }
     ) {
-        // Lottie animation that this page is under development
+        // this page is under development
         UnderDevelopmentAnimation()
     }
 }

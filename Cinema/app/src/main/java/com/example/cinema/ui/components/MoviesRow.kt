@@ -1,19 +1,15 @@
 package com.example.cinema.ui.components
 
-import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import com.example.cinema.data.models.MovieModel
+import com.example.cinema.navigation.getMoviePath
 
 @Composable
 fun MoviesRow(
@@ -31,7 +27,7 @@ fun MoviesRow(
             MovieCard(
                 movie = movie,
                 onMovieClick = {
-                    navController.navigate("movie?movieName=${movie.title}&movieId=${movie.id}")
+                    navController.navigate(getMoviePath(movie.title, movie.id.toString()))
                 },
             )
         }

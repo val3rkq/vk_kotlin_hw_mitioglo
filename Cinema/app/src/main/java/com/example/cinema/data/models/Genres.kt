@@ -7,6 +7,7 @@ data class GenreResponse(
 
 class Genres {
 
+    // TODO: add in string res
     private val genresById = mapOf(
         28 to "Action",
         12 to "Adventure",

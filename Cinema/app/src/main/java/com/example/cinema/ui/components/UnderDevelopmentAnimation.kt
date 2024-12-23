@@ -24,7 +24,7 @@ fun UnderDevelopmentAnimation() {
         LottieAnimation(
             composition = composition,
             progress = progress,
-            modifier = Modifier.size(300.dp) // Set the desired size
+            modifier = Modifier.size(300.dp)
         )
     }
 }

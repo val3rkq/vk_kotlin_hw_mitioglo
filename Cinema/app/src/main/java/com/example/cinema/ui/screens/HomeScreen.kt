@@ -95,10 +95,10 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel, repositor
                     modifier = Modifier
                         .height(350.dp)
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp, horizontal = 10.dp)
+                        .padding(vertical = 4.dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {

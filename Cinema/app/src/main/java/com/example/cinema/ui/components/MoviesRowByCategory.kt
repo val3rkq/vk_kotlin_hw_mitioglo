@@ -35,7 +35,7 @@ fun MoviesRowByCategory(
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(3) {
+            items(4) {
                 LoadingMovieCard()
             }
         }

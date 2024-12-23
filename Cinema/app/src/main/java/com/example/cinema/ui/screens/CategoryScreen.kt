@@ -24,8 +24,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
+import com.example.cinema.R
 import com.example.cinema.ui.viewmodel.CategoryViewModel
 import com.example.cinema.data.models.categories
 import com.example.cinema.ui.components.ErrorView
@@ -46,7 +48,7 @@ fun CategoryScreen(navController: NavController, categoryId: String, viewModel: 
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = IconBack,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.pop_back)
                         )
                     }
                 },
@@ -54,7 +56,7 @@ fun CategoryScreen(navController: NavController, categoryId: String, viewModel: 
                     IconButton(onClick = { navController.navigate("favourite") }) {
                         Icon(
                             imageVector = IconNotLiked,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.pop_back)
                         )
                     }
                 },
@@ -71,14 +73,14 @@ fun CategoryScreen(navController: NavController, categoryId: String, viewModel: 
         }
     ) { innerPadding ->
         Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding)
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(
-                        WindowInsetsSides.Horizontal
-                    )
+            .fillMaxSize()
+            .padding(innerPadding)
+            .consumeWindowInsets(innerPadding)
+            .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Horizontal
                 )
+            )
         ) {
             val uiState by viewModel.uiState.collectAsState()
             when (uiState) {

@@ -17,10 +17,10 @@ import com.valentinilk.shimmer.shimmer
 fun LoadingMovieCard() {
     Box(
         modifier = Modifier
-            .width(250.dp)  // Card width
-            .height(300.dp)  // Card height
+            .width(250.dp)
+            .height(300.dp)
             .clip(RoundedCornerShape(10.dp))
-            .shimmer() // the shimmer effect
+            .shimmer()
             .background(Color.Gray)
     )
 }
